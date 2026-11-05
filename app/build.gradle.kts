@@ -15,9 +15,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Obligatorio para yt-dlp y ffmpeg (compila binarios para arquitectura ARM)
+        // Deja solo arm64 (los teléfonos modernos) para no triplicar peso
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+            abiFilters += listOf("arm64-v8a")
         }
     }
 
@@ -26,7 +26,6 @@ android {
     }
 
     compileOptions {
-        // Obligatorio para NewPipe Extractor en minSdk < 33
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -39,16 +38,14 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            pickFirsts += "lib/**/libc++_shared.so"
         }
     }
 }
 
 dependencies {
-    // Permite características modernas de Java que requiere NewPipe
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    // UI Jetpack Compose & Material 3
+    // UI Jetpack Compose & Material 3 Expressive
     val composeBom = platform("androidx.compose:compose-bom:2024.06.00")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
@@ -57,15 +54,14 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.activity:activity-compose:1.9.1")
 
-    // Cargar miniaturas de videos
+    // Miniaturas
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // NewPipe Extractor (Streaming, feed, metadatos)
+    // NewPipe Extractor (Feed, datos, streaming)
     implementation("com.github.TeamNewPipe:NewPipeExtractor:v0.24.6")
 
-    // Librería yt-dlp (Misma que usa SEAL para descargas)
-    implementation("com.github.yausername.youtubedl-android:library:0.15.0")
-    implementation("com.github.yausername.youtubedl-android:ffmpeg:0.15.0")
+    // --- LA LIBRERÍA EXACTA QUE USA SEAL (SIN EL BINARIO FFmpeg) ---
+    implementation("io.github.junkfood02.youtubedl-android:library:0.17.2")
 
     // Corrutinas
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
