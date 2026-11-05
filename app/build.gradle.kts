@@ -15,9 +15,22 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Deja solo arm64 (los teléfonos modernos) para no triplicar peso
+        // Limita a arquitectura de 64 bits para evitar triplicar peso
         ndk {
             abiFilters += listOf("arm64-v8a")
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            // Permite compilar Release firmado listo para instalar
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -45,7 +58,7 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    // UI Jetpack Compose & Material 3 Expressive
+    // UI Jetpack Compose & Material 3
     val composeBom = platform("androidx.compose:compose-bom:2024.06.00")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
@@ -57,10 +70,10 @@ dependencies {
     // Miniaturas
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // NewPipe Extractor (Feed, datos, streaming)
+    // NewPipe Extractor (Streaming, metadatos y feed)
     implementation("com.github.TeamNewPipe:NewPipeExtractor:v0.24.6")
 
-    // --- LA LIBRERÍA EXACTA QUE USA SEAL (SIN EL BINARIO FFmpeg) ---
+    // yt-dlp nativo que usa Seal (sin el binario pesado de FFmpeg)
     implementation("io.github.junkfood02.youtubedl-android:library:0.17.2")
 
     // Corrutinas
