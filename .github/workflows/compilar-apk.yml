@@ -11,24 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Descargar codigo
+        uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Configurar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
+      # Instala Gradle en la nube de GitHub
+      - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
-      - name: Grant Execute Permission to Gradlew
-        run: chmod +x ./gradlew
+      # Si NO existe gradlew en tu repo, este paso lo fabrica al instante
+      - name: Generar gradlew automáticamente
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            echo "gradlew no existe, generándolo ahora mismo..."
+            gradle wrapper --gradle-version 8.9
+            chmod +x gradlew
+          fi
 
-      - name: Assemble Debug APK
+      # Compilar la aplicación
+      - name: Compilar APK
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: Upload APK
+      # Guardar el APK descargable
+      - name: Subir APK generado
         uses: actions/upload-artifact@v4
         with:
           name: PlayTube-Debug
