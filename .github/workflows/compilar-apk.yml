@@ -1,4 +1,4 @@
-name: Build PlayTube APK
+name: Build PlayTube APK (Release)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Compilar APK
+    name: Compilar APK Release
     runs-on: ubuntu-latest
 
     steps:
@@ -20,28 +20,24 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Instala Gradle en la nube de GitHub
       - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      # Si NO existe gradlew en tu repo, este paso lo fabrica al instante
       - name: Generar gradlew automáticamente
         run: |
           if [ ! -f "./gradlew" ]; then
-            echo "gradlew no existe, generándolo ahora mismo..."
+            echo "gradlew no existe, generándolo ahora..."
             gradle wrapper --gradle-version 8.9
             chmod +x gradlew
           fi
 
-      # Compilar la aplicación
-      - name: Compilar APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Compilar APK Release
+        run: ./gradlew assembleRelease --stacktrace
 
-      # Guardar el APK descargable
-      - name: Subir APK generado
+      - name: Subir APK Release
         uses: actions/upload-artifact@v4
         with:
-          name: PlayTube-Debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: PlayTube-Release
+          path: app/build/outputs/apk/release/*.apk
