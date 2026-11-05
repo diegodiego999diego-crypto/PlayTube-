@@ -36,8 +36,22 @@ jobs:
       - name: Compilar APK Release
         run: ./gradlew assembleRelease --stacktrace
 
-      - name: Subir APK Release
+      # 1. Instalar p7zip y empaquetar el APK con compresión ULTRA
+      - name: Comprimir APK con compresión máxima (.7z)
+        run: |
+          sudo apt-get update && sudo apt-get install -y p7zip-full
+          mkdir -p paquete_ligero
+          
+          # Renombrar APK
+          cp app/build/outputs/apk/release/*.apk ./PlayTube.apk
+          
+          # Compresión Ultra LZMA2 (-mx=9)
+          7z a -t7z -mx=9 paquete_ligero/PlayTube-UltraComprimido.7z PlayTube.apk
+
+      # 2. Subir el paquete aplicando también compresión máxima al artefacto
+      - name: Subir APK Ultra Comprimido
         uses: actions/upload-artifact@v4
         with:
-          name: PlayTube-Release
-          path: app/build/outputs/apk/release/*.apk
+          name: PlayTube-Release-Minimo
+          path: paquete_ligero/PlayTube-UltraComprimido.7z
+          compression-level: 9
